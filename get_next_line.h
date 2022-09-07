@@ -5,26 +5,27 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enkeskin < enkeskin@student.42istanbul.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/03 16:19:19 by enkeskin          #+#    #+#             */
-/*   Updated: 2022/08/03 17:49:43 by enkeskin         ###   ########.fr       */
+/*   Created: 2022/08/22 14:37:24 by enkeskin          #+#    #+#             */
+/*   Updated: 2022/08/22 18:05:33 by enkeskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# include <unistd.h>
 # include <stdlib.h>
+# include <unistd.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 42
+#  define BUFFER_SIZE 1
 # endif
 
-int		ft_n(char *s1);
-char	*ft_strjoin(char *s1, char *s2);
-int		ft_strlen(char *str);
-char	*ft_get_line(char *str);
-char	*ft_update_str(char *str);
 char	*get_next_line(int fd);
-void	*ft_calloc(size_t count, size_t size);
+char	*ft_read_and_create(int fd, char *str);
+char	*ft_create(char *str);
+size_t	ft_strlen(const char *str);
+char	*ft_strjoin(char *s1, char *s2);
+int		ft_strchr(char *str);
+size_t	ft_strcpy(char	*dst, const char *src, size_t	dstsize);
+void	*ft_free(void *str);
 #endif

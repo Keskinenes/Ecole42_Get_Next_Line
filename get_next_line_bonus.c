@@ -5,32 +5,76 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: enkeskin < enkeskin@student.42istanbul.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/03 16:19:07 by enkeskin          #+#    #+#             */
-/*   Updated: 2022/08/03 16:19:32 by enkeskin         ###   ########.fr       */
+/*   Created: 2022/08/22 14:36:58 by enkeskin          #+#    #+#             */
+/*   Updated: 2022/08/22 18:13:27 by enkeskin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-char	*ft_read(int fd, char *str)
+char	*ft_get_line(char *str)
 {
-	int		rd;
-	char	*buff;
+	int		i;
+	char	*dizi;
 
-	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	i = 0;
+	if (!str[i])
+		return (NULL);
+	while (str[i] && str[i] != '\n')
+		i++;
+	dizi = malloc(sizeof(char) * (i + 2));
+	if (!dizi)
+		return (NULL);
+	i = -1;
+	while (str[++i] && str[i] != '\n')
+		dizi[i] = str[i];
+	if (str[i] == '\n')
+	{
+		dizi[i] = str[i];
+		i++;
+	}
+	dizi[i] = '\0';
+	return (dizi);
+}
+
+char	*ft_create(char *str)
+{
+	int		i;
+	int		j;
+	char	*dizi;
+
+	i = 0;
+	while (str[i] && str[i] != '\n')
+		i++;
+	if (!str[i])
+		return (ft_free(str));
+	dizi = malloc(sizeof(char) * (ft_strlen(str) - i + 1));
+	if (!dizi)
+		return (NULL);
+	i++;
+	j = 0;
+	while (str[i])
+		dizi[j++] = str[i++];
+	dizi[j] = '\0';
+	free(str);
+	return (dizi);
+}
+
+char	*ft_read_and_create(int fd, char *str)
+{	
+	char	*buff;
+	int		rc;
+
+	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buff)
 		return (NULL);
-	rd = 1;
-	while (!ft_n(str) && rd != 0)
+	rc = 1;
+	while (!ft_strchr(str) && rc != 0)
 	{
-		rd = read(fd, buff, BUFFER_SIZE);
-		if (rd == -1)
-		{
-			free(str);
-			free(buff);
-			return (NULL);
-		}
-		*(buff + rd) = '\0';
+		rc = read(fd, buff, BUFFER_SIZE);
+		if (rc == -1)
+			return (ft_free(buff));
+		buff[rc] = '\0';
 		str = ft_strjoin(str, buff);
 	}
 	free(buff);
@@ -40,14 +84,43 @@ char	*ft_read(int fd, char *str)
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*strs[256];
+	static char	*str[256];
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	strs[fd] = ft_read(fd, strs[fd]);
-	if (!strs[fd])
-		return (NULL);
-	line = ft_get_line(strs[fd]);
-	strs[fd] = ft_update_str(strs[fd]);
+		return (0);
+	str[fd] = ft_read_and_create(fd, str[fd]);
+	if (!str[fd])
+		return (0);
+	line = ft_get_line(str[fd]);
+	str[fd] = ft_create(str[fd]);
 	return (line);
+}
+#include<stdio.h>
+#include<fcntl.h>
+
+int main()
+{
+	int fd;
+	int fd1;
+
+	static char *str;
+	static char *str2;
+	fd = open("aa.txt", O_CREAT | O_RDWR, 0777);
+	fd1 = open("bb.txt", O_CREAT | O_RDWR, 0777);
+
+	str = get_next_line(fd);
+	str2 = get_next_line(fd1);
+	while (str || str2)
+	{
+		printf("%s", str);
+		printf("%s", str2);
+		free(str);
+		free(str2);
+		str = get_next_line(fd);
+		str2 = get_next_line(fd1);
+	}
+
+//	system("leaks a.out");
+	
+	return(0);
 }
